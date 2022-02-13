@@ -9,8 +9,8 @@ public class LookingTrigger : MonoBehaviour
 {
     public Transform objTf;
 
-    [Range(0f,1f)]
-    public float precisness =0.5f;
+    [Range(0f,90f)]
+    public float anglThresholdDeg = 30f;
     private void OnDrawGizmos()
     {
         Vector2 center = transform.position;
@@ -19,9 +19,14 @@ public class LookingTrigger : MonoBehaviour
 
         Vector2 playerToTriggerDir = (center - playerPos).normalized;
 
-        float lookness = Vector2.Dot(playerToTriggerDir, playerLookDir);
+        float dot = Vector2.Dot(playerToTriggerDir, playerLookDir);
+        dot = Mathf.Clamp(dot, -1, 1); //to make sure we stay within -1 and 1
 
-        bool isLooking = lookness >= precisness;
+        float angRad = Mathf.Acos(dot); //find angle between two vector player and PlayerlookDir
+
+        float anglThreshRad = anglThresholdDeg * Mathf.Deg2Rad; //change degree to radian
+
+        bool isLooking = angRad <= anglThreshRad;
 
         Gizmos.color = isLooking ? Color.green : Color.red;
         Gizmos.DrawLine(playerPos, playerPos + playerToTriggerDir);
